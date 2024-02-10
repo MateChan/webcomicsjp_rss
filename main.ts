@@ -7,7 +7,7 @@ type Item = {
   link?: string;
   guid?: string;
   pubDate?: string;
-  content?: string;
+  description?: string;
   enclosure?: {
     "@url"?: string;
     "@length"?: number;
@@ -36,15 +36,23 @@ app.get("/:listId", async (c) => {
         "@length": 0,
         "@type": "image/jpeg",
       };
-      const titleEl = entry.getElementsByClassName("entry-title").at(0);
-      const title = titleEl?.innerText.trim();
-      const link = titleEl?.getElementsByTagName("a")[0].getAttribute("href") ??
-        undefined;
+      const title = entry.getElementsByClassName("entry-title").at(0)?.innerText
+        .trim();
       const pubDate = entry.getElementsByClassName("entry-date").at(0)
         ?.innerText.trim();
-      const content = entry.getElementsByClassName("entry-text").at(0)
-        ?.innerText.trim();
-      items.push({ title, link, guid: link, pubDate, content, enclosure });
+      const textEl = entry.getElementsByClassName("entry-text").at(0);
+      const description = textEl?.innerText.trim();
+      const link =
+        textEl?.getElementsByTagName("a").at(0)?.getAttribute("href") ??
+          undefined;
+      items.push({
+        title: title,
+        link,
+        guid: link,
+        pubDate,
+        description: `${pubDate} | ${description}`,
+        enclosure,
+      });
     });
     const isLastPage = Boolean(
       document?.getElementsByClassName("paer-next-nolink").at(0),
